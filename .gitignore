@@ -1,0 +1,10 @@
+.DS_Store
+.env
+.env.build
+yarn-error.log
+.next/
+.vscode/
+fbrules.json
+node_modules/
+
+.now
