@@ -6,7 +6,7 @@ const path = require('path')
 const webpack = require('webpack')
 const withCSS = require('@zeit/next-css')
 const withSass = require('@zeit/next-sass')
-
+const withWorkers = require('@zeit/next-workers')
 
 
 
@@ -25,7 +25,7 @@ const DEFAULT_PORT = 3000
 
 
 
-module.exports = withSass(withCSS({
+module.exports = withWorkers(withSass(withCSS({
   // target: 'serverless',
 
   env: {
@@ -37,10 +37,9 @@ module.exports = withSass(withCSS({
     firebaseProjectID: process.env.FIREBASE_PROJECT_ID,
     firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET,
 
-    buildDate:  (new Date()).toISOString(),
+    buildDate: (new Date()).toISOString(),
     nodeVersion: process.version,
   },
-
   webpack: (config, data) => {
     config.module.rules.push({
       exclude: /node_modules/,
@@ -64,4 +63,4 @@ module.exports = withSass(withCSS({
       .map((dir) => glob.sync(dir))
       .reduce((acc, dir) => acc.concat(dir), []),
   },
-}))
+})))

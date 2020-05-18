@@ -1,4 +1,3 @@
-// import App from 'next/app'
 import firebase from "firebase/app";
 
 import "firebase/database";
