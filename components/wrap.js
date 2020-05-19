@@ -7,7 +7,7 @@ import fbConfig from "../firebase.config.js";
 import { Provider } from "react-redux";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 
-
+import "../scss/app.scss";
 
 try {
     firebase.initializeApp(fbConfig);
