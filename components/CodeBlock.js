@@ -37,12 +37,12 @@ export const CodeBlock = ({ id, code: initialCode }) => {
             const { type } = packet;
             switch (type) {
                 case "return_values":
-                    setResults(Array.from(packet.results.entries()).map(([name, value], i) => {
-                        return <span key={i} style={{ paddingRight: "5px" }}><span>{name}</span>=<span>{JSON.stringify(value)}</span></span>;
+                    setResults(packet.results.map(([name, value], i) => {
+                        return <span key={i} style={{ paddingRight: "5px" }}><span>{name}</span>=<span dangerouslySetInnerHTML={{ __html: highlight(value, languages.js) }}></span></span>;
                     }));
                     break;
                 case "log":
-                    setLogs([...logs, <span dangerouslySetInnerHTML={{ __html: highlight(packet.data.map(_ => JSON.stringify(_)).join(","), languages.js) }}></span>]);
+                    setLogs([...logs, <span dangerouslySetInnerHTML={{ __html: highlight(packet.data.join(" "), languages.js) }}></span>]);
                     break;
                 case "clear_logs":
                     setLogs([]);

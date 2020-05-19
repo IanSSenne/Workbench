@@ -1,7 +1,19 @@
+import serialize from "serialize-javascript";
+
 const data_stack = [];
 const code_cache = [];
 const complete = Symbol("SANDBOX_COMPLETE");
 const begin = Symbol("SANDBOX_BEGIN_EXECUTION");
+// String for the string primitive.
+// Number for the number primitive.
+// BigInt for the bigint primitive.
+// Boolean for the boolean primitive.
+// Symbol for the symbol primitive.
+Object.defineProperty(Number.prototype, "toJSON", { value() { return `"${this}"` } });
+Object.defineProperty(BigInt.prototype, "toJSON", { value() { return `"${this}"` } });
+Object.defineProperty(Boolean.prototype, "toJSON", { value() { return `"${this}"` } });
+Object.defineProperty(Symbol.prototype, "toJSON", { value() { return `"${this}"` } });
+Object.defineProperty(Function.prototype, "toJSON", { value() { return `"function ${this.name}{...}"` } });
 function resolve_name_on_data_stack(name) {
     for (let i = data_stack.length - 2; i >= 0; i--) {
         if (data_stack[i] && data_stack[i].has(name)) {
@@ -22,6 +34,9 @@ function execute_from_point(start) {
         }
     }
 }
+function post(data) {
+    postMessage(data);
+}
 onmessage = ({ data }) => {
     const { id, code: { code } } = data;
     data_stack.splice(id);
@@ -35,14 +50,13 @@ onmessage = ({ data }) => {
             });
         },
         log(...data) {
-            console.log(...data);
-            postMessage({ type: "log", data, id });
+            post({ type: "log", data: data.map(serialize), id });
         },
         [complete]() {
-            postMessage({ id, results: data_stack[id], type: "return_values" });
+            post({ id, results: Array.from(data_stack[id].entries()).map(_ => [_[0], serialize(_[1])]), type: "return_values" });
         },
         [begin]() {
-            postMessage({ type: "clear_logs", id });
+            post({ type: "clear_logs", id });
         }
     }
     code_cache[id] = { call: new Function("sandbox", code), Sandbox };
