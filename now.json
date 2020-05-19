@@ -6,7 +6,7 @@
             "FIREBASE_API_KEY": "@wjs-api_key",
             "FIREBASE_APP_ID": "@wjs-app_id",
             "FIREBASE_AUTH_DOMAIN": "@wjs-auth_domain",
-            "FIREBASE_DATABASE_URL": "@wjs-database_url",
+            "FIREBASE_DATABASE_URL": "@wjs-database_u_r_l",
             "FIREBASE_MESSAGING_SENDER_ID": "@wjs-messaging_sender_id",
             "FIREBASE_PROJECT_ID": "@wjs-project_id",
             "FIREBASE_STORAGE_BUCKET": "@wjs-storage_bucket"
