@@ -8,7 +8,7 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism.css'
 import 'react-simple-code-editor'
 import { useFirebase } from "react-redux-firebase";
-import { InjectWorker, $TranspileWorker } from "../../helpers/sandbox/runner";
+import { runner, InjectWorker, $TranspileWorker } from "../../helpers/sandbox/runner";
 const Code = (props) => {
     return <Editor
         highlight={code => { try { return highlight(code, languages.js) } catch (e) { } }}
@@ -25,13 +25,39 @@ const Comment = ({ id }) => {
     return <p>comment {id}</p>
 }
 const CodeBlock = ({ id }) => {
-    const [code, setCode] = useState("import {a} from \"sandbox\";\nexport {a};");
+    const [code, setCode] = useState("const a = 12345;\nexport {a};");
+    const [logs, setLogs] = useState([]);
+    const [results, setResults] = useState([]);
+    useEffect(() => {
+        console.time();
+        $TranspileWorker.postMessage({ code, id });
+    }, [code])
+    useEffect(() => {
+        runner.on(id, (packet) => {
+            console.log(packet);
+            const { type } = packet;
+            switch (type) {
+                case "return_values":
+                    setResults(Array.from(packet.results.entries()).map(([name, value], i) => {
+                        return <span key={i} style={{ paddingRight: "5px" }}><span>{name}</span>=<span>{JSON.stringify(value)}</span></span>
+                    }));
+                    break;
+                case "log":
+                    setLogs([...logs, packet.logs]);
+                    break;
+            }
+        });
+        return () => {
+            runner.off(id);
+        }
+    }, [logs])
     return <div>
         <FcNext></FcNext>
         <Code value={code} onValueChange={code => {
             setCode(code);
-            $TranspileWorker.postMessage({ code, id });
         }}></Code>
+        <ul>{logs.map((_, i) => <li key={i}>_</li>)}</ul>
+        <p>{results}</p>
     </div>
 }
 const Item = ({ id }) => {
@@ -47,7 +73,7 @@ const Item = ({ id }) => {
 const Page = () => {
     return <>
         <h1>something</h1>
-        <CodeBlock id={123}></CodeBlock>
+        <CodeBlock id={0}></CodeBlock>
     </>
 }
 const Exported = (props) => <Wrap><InjectWorker></InjectWorker><Page {...props}></Page></Wrap>
