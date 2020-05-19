@@ -24,13 +24,16 @@ const Code = (props) => {
 const Comment = ({ id }) => {
     return <p>comment {id}</p>
 }
-const CodeBlock = ({ id }) => {
-    const [code, setCode] = useState("const a = 12345;\nexport {a};");
+const CodeBlock = ({ id, initialCode }) => {
+    const [code, setCode] = useState(initialCode);
     const [logs, setLogs] = useState([]);
     const [results, setResults] = useState([]);
     useEffect(() => {
-        console.time();
-        $TranspileWorker.postMessage({ code, id });
+        const timeout = setTimeout(() => {
+            setLogs([]);
+            $TranspileWorker.postMessage({ code, id });
+        }, 500);
+        return () => clearTimeout(timeout);
     }, [code])
     useEffect(() => {
         runner.on(id, (packet) => {
@@ -43,7 +46,7 @@ const CodeBlock = ({ id }) => {
                     }));
                     break;
                 case "log":
-                    setLogs([...logs, packet.logs]);
+                    setLogs([...logs, <span dangerouslySetInnerHTML={{ __html: highlight(packet.data.map(_ => JSON.stringify(_)).join(","), languages.js) }}></span>]);
                     break;
             }
         });
@@ -56,7 +59,7 @@ const CodeBlock = ({ id }) => {
         <Code value={code} onValueChange={code => {
             setCode(code);
         }}></Code>
-        <ul>{logs.map((_, i) => <li key={i}>_</li>)}</ul>
+        <ul>{logs.map((_, i) => <li key={i}>{_}</li>)}</ul>
         <p>{results}</p>
     </div>
 }
@@ -73,7 +76,8 @@ const Item = ({ id }) => {
 const Page = () => {
     return <>
         <h1>something</h1>
-        <CodeBlock id={0}></CodeBlock>
+        <CodeBlock id={0} initialCode={`const x = 1337;\nexport {x};`}></CodeBlock>
+        <CodeBlock id={1} initialCode={`import {x} from "sandbox";\nsandbox.log(x);\nconst y = x*2;\nexport {y};`}></CodeBlock>
     </>
 }
 const Exported = (props) => <Wrap><InjectWorker></InjectWorker><Page {...props}></Page></Wrap>
