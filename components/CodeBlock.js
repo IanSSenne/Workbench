@@ -38,7 +38,7 @@ export const CodeBlock = ({ id, code: initialCode }) => {
             switch (type) {
                 case "return_values":
                     setResults(packet.results.map(([name, value], i) => {
-                        return <span key={i} style={{ paddingRight: "5px" }}><span>{name}</span>=<span dangerouslySetInnerHTML={{ __html: highlight(value, languages.js) }}></span></span>;
+                        return <span key={i} style={{ paddingRight: "5px" }}><span>{name}</span>=<span dangerouslySetInnerHTML={{ __html: highlight(value.indexOf("\"function") ? value : JSON.parse(value), languages.js) }}></span></span>;
                     }));
                     break;
                 case "log":

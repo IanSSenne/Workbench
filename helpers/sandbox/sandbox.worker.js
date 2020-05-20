@@ -13,7 +13,7 @@ Object.defineProperty(Number.prototype, "toJSON", { value() { return `"${this}"`
 Object.defineProperty(BigInt.prototype, "toJSON", { value() { return `"${this}"` } });
 Object.defineProperty(Boolean.prototype, "toJSON", { value() { return `"${this}"` } });
 Object.defineProperty(Symbol.prototype, "toJSON", { value() { return `"${this}"` } });
-Object.defineProperty(Function.prototype, "toJSON", { value() { return `"function ${this.name}{...}"` } });
+Object.defineProperty(Function.prototype, "toJSON", { value() { return `function ${this.name}{...}` } });
 function resolve_name_on_data_stack(name) {
     for (let i = data_stack.length - 2; i >= 0; i--) {
         if (data_stack[i] && data_stack[i].has(name)) {
@@ -50,10 +50,10 @@ onmessage = ({ data }) => {
             });
         },
         log(...data) {
-            post({ type: "log", data: data.map(serialize), id });
+            post({ type: "log", data: data.map((_) => JSON.stringify(_)), id });
         },
         [complete]() {
-            post({ id, results: Array.from(data_stack[id].entries()).map(_ => [_[0], serialize(_[1])]), type: "return_values" });
+            post({ id, results: Array.from(data_stack[id].entries()).map(_ => [_[0], JSON.stringify(_[1])]), type: "return_values" });
         },
         [begin]() {
             post({ type: "clear_logs", id });

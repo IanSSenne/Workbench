@@ -21,7 +21,7 @@ const Page = () => {
     useEffect(() => {
         firebase.ref(`/${page}/workbook`).once("value", (snapshot) => {
             const res = [];
-            snapshot.val().forEach((panel, i) => {
+            (snapshot.val() ?? []).forEach((panel, i) => {
                 if (panel.type === "code") {
                     res.push(<CodeBlock key={i} id={i} {...panel}></CodeBlock>)
                 } else if (panel.type === "comment") {
