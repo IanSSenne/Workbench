@@ -1,3 +1,8 @@
 .ql-editor {
-    overflow-y: inherit !important;
+  overflow-y: inherit !important;
+}
+
+@font-face {
+  font-family: "codicon";
+  src: url(/codicon.ttf) format("truetype");
 }

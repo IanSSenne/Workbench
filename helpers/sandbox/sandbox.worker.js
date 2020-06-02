@@ -1,5 +1,3 @@
-import serialize from "serialize-javascript";
-
 const data_stack = [];
 const code_cache = [];
 const complete = Symbol("SANDBOX_COMPLETE");
@@ -29,7 +27,11 @@ function execute_from_point(start) {
         }
         if (code_cache[i]) {
             code_cache[i].Sandbox[begin]();
-            code_cache[i].call(code_cache[i].Sandbox);
+            try {
+                code_cache[i].call(code_cache[i].Sandbox);
+            } catch (e) {
+                console.error(e);
+            }
             code_cache[i].Sandbox[complete]();
         }
     }
@@ -37,10 +39,41 @@ function execute_from_point(start) {
 function post(data) {
     postMessage(data);
 }
+class SandboxDataMimic { }
+class Sandbox_IteratorWrapper extends SandboxDataMimic {
+    constructor(iterator) {
+        super();
+        this.target = iterator;
+        this.values = [];
+        this.index = 0;
+        this.isDone = false;
+    }
+    saveState() {
+
+    }
+    saveCurrentState() {
+        return new Sandbox_IteratorWrapper(this, this.index);
+    }
+    reset() {
+
+    }
+    next() {
+        if (this.isDone) {
+            return { value: undefined, done: true };
+        }
+        this.index++;
+        const value = this.target.next();
+        this.values.push(value);
+        return { value: value.value, done: value.done }
+    }
+}
 onmessage = ({ data }) => {
     const { id, code: { code } } = data;
     data_stack.splice(id);
     const Sandbox = {
+        generator(func, args) {
+            return new Sandbox_IteratorWrapper(func(...Array.from(args)));
+        },
         get(items) {
             return items.map(resolve_name_on_data_stack);
         },

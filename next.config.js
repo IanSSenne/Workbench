@@ -7,6 +7,11 @@ const webpack = require('webpack')
 const withCSS = require('@zeit/next-css')
 const withSass = require('@zeit/next-sass')
 const withWorkers = require('@zeit/next-workers')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+// const withTM = require("next-transpile-modules")([
+//   "monaco-editor"
+// ]);
+
 
 
 
@@ -41,18 +46,13 @@ module.exports = withWorkers(withSass(withCSS({
     nodeVersion: process.version,
   },
   webpack: (config, data) => {
-    config.module.rules.push({
-      exclude: /node_modules/,
-      test: /\.svg$/,
-      loader: 'raw-loader',
-    })
-
-    config.module.rules.unshift({
-      enforce: 'pre',
-      exclude: /node_modules/u,
-      loader: 'eslint-loader',
-      test: /\.js$/u,
-    })
+    config.plugins.push(new MonacoWebpackPlugin({
+      languages: [
+        "javascript",
+        "typescript"
+      ],
+      filename: "static/[name].worker.js"
+    }));
 
     return config
   },
@@ -63,4 +63,7 @@ module.exports = withWorkers(withSass(withCSS({
       .map((dir) => glob.sync(dir))
       .reduce((acc, dir) => acc.concat(dir), []),
   },
+
+  cssLoaderOptions: { url: false },
+  workerLoaderOptions: { inline: true }
 })))

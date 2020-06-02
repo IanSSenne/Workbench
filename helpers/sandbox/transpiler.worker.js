@@ -3,11 +3,12 @@ import escodegen from "escodegen";
 import estemplate from "estemplate";
 import estraverse from "estraverse";
 import { parseModule } from "esprima";
+import { transform as babelTransform } from "@babel/standalone";
 // this is here because importing it breaks next.js on my machine...
-importScripts("https://unpkg.com/@babel/standalone/babel.min.js");
+// importScripts("https://unpkg.com/@babel/standalone/babel.min.js");
 export function transform(code) {
     try {
-        const ast = parseModule(Babel.transform(code, {
+        const ast = parseModule(babelTransform(code, {
             presets: [['env', {
                 "targets": {
                     "esmodules": true
@@ -20,7 +21,7 @@ export function transform(code) {
         if (ast.errors.length) {
             return { errors: ast.errors };
         }
-        return {
+        const res = {
             code: escodegen.generate(estraverse.replace(ast, {
                 enter(node) {
                     if (node.type === "ImportDeclaration") {
@@ -43,12 +44,21 @@ export function transform(code) {
                     } else if (node.type === "ExportNamedDeclaration") {
                         return estemplate(`sandbox.put([${node.specifiers.map(_ => `["${_.exported.name}",${_.local.name}]`).join(",")}]);\n`, {});
                     }
+                    else if (node.type === "FunctionDeclaration") {
+                        if (node.generator) {
+                            return (estemplate(`function ${node.id.name}(){
+                                return sandbox.generator(${escodegen.generate(node)},arguments);
+                            }`, {}));
+                        }
+                    }
                 }
             }))
         };
+        console.log(res);
+        return res;
     } catch (e) {
         console.error(e);
-        return { errors: ["Compiler error: " + e.message] }
+        return { code: "//" + e.message, errors: ["Compiler error: " + e.message] }
     }
 }
 

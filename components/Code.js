@@ -1,36 +1,54 @@
-import React, { useState, useRef, useContext } from "react";
-import { SheetContext } from "../helpers/SheetContext";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from 'prismjs/components/prism-core';
+import React, { useState, useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+// import "../css/index.css";
+const MonacoEditor = dynamic(() => import("react-monaco-editor"), { ssr: false });
+
 export const Code = (props) => {
-    const [length, setLength] = useState(props.value.split("\n").length);
-    const id = useRef(Math.random().toString(36));
-    return <div style={{
-        display: "flex"
-    }}>
-        <label htmlFor={id.current}>
-            <ul style={{ display: "inline-block", fontSize: '12px', margin: "0px 10px 0px 0px", listStyle: "none" }}>
-                {Array.from(Array(length), (_, i) => <li key={i}>{i + 1}</li>)}
-            </ul>
-        </label>
-        <Editor
-            highlight={code => {
-                try {
-                    return highlight(code, languages.js);
-                }
-                catch (e) { }
-            }}
-            textareaId={id.current}
-            style={{
-                display: "inline-block",
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 12,
-                width: "100%"
-            }}
-            {...props}
-            onChange={(e) => setLength(e.target.value.split("\n").length)} onValueChange={(e) => {
-                setLength(props.value.split("\n").length);
-                props.onValueChange && props.onValueChange(e);
-            }} />
-    </div>;
+
+    const [postBody, setPostBody] = useState(props.value);
+    const isInitialRender = useRef(true);
+    useEffect(() => {
+        if (!isInitialRender.current) {
+            props.onValueChange(postBody);
+        }
+        isInitialRender.current = false;
+    }, [postBody]);
+    return <MonacoEditor
+
+        editorDidMount={() => {
+            window.MonacoEnvironment.getWorkerUrl = (
+                _moduleId,
+                label
+            ) => {
+                if (label === "json")
+                    return "/_next/static/json.worker.js";
+                if (label === "css")
+                    return "/_next/static/css.worker.js";
+                if (label === "html")
+                    return "/_next/static/html.worker.js";
+                if (
+                    label === "typescript" ||
+                    label === "javascript"
+                )
+                    return "/_next/static/ts.worker.js";
+                return "/_next/static/editor.worker.js";
+            };
+        }}
+        width="800"
+        height="600"
+        language="javascript"
+        theme="vs-light"
+        options={{
+
+        }}
+        value={postBody}
+        options={{
+            minimap: {
+                enabled: true
+            }
+        }}
+        onChange={setPostBody}
+    />;
+    // </div>;
 };
