@@ -11,7 +11,7 @@ Object.defineProperty(Number.prototype, "toJSON", { value() { return `"${this}"`
 Object.defineProperty(BigInt.prototype, "toJSON", { value() { return `"${this}"` } });
 Object.defineProperty(Boolean.prototype, "toJSON", { value() { return `"${this}"` } });
 Object.defineProperty(Symbol.prototype, "toJSON", { value() { return `"${this}"` } });
-Object.defineProperty(Function.prototype, "toJSON", { value() { return `function ${this.name}{...}` } });
+Object.defineProperty(Function.prototype, "toJSON", { value() { return `function ${this.name}(){...}` } });
 function resolve_name_on_data_stack(name) {
     for (let i = data_stack.length - 2; i >= 0; i--) {
         if (data_stack[i] && data_stack[i].has(name)) {
