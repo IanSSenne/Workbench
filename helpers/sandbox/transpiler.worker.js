@@ -36,7 +36,7 @@ export function transform(code) {
                 }
             ]
         });
-        return babel_code.code;
+        return { code: babel_code.code, errors: [] };
     } catch (e) {
         console.error(e);
         return { code: "//" + e.message, errors: ["Compiler error: " + e.message] }
