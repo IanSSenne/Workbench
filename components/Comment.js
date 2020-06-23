@@ -5,9 +5,10 @@ import { useFirebase, isEmpty, isLoaded } from "react-redux-firebase";
 import "react-quill/dist/quill.bubble.css"
 import { useSelector } from "react-redux";
 import Loading from './Loading';
-
+import loaderHelper from "../helpers/loaderHelper";
 const Quill = dynamic(() => import("react-quill"), { "ssr": false, loading: Loading });
 export const Comment = ({ id, comment }) => {
+    loaderHelper.load("comment");
     const [value, setValue] = useState(comment);
     const firebase = useFirebase();
     const page = useContext(SheetContext);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { highlight, languages } from 'prismjs/components/prism-core';
 import { FcNext } from "react-icons/fc";
 import '../scss/codeBlock.scss';
@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 export const CodeBlock = ({ id, code: initialCode }) => {
     const [code, setCode] = useState(initialCode);
     const [logs, setLogs] = useState([]);
+    const logsRef = useRef([]);
     const [results, setResults] = useState([]);
     const firebase = useFirebase();
     const page = useContext(SheetContext);
@@ -38,6 +39,7 @@ export const CodeBlock = ({ id, code: initialCode }) => {
     useEffect(() => {
         runner.on(id, (packet) => {
             const { type } = packet;
+            console.log("packet", logs, packet);
             switch (type) {
                 case "return_values":
                     setResults(packet.results.map(([name, value], i) => {
@@ -45,19 +47,21 @@ export const CodeBlock = ({ id, code: initialCode }) => {
                     }));
                     break;
                 case "log":
-                    setLogs([...logs, <span dangerouslySetInnerHTML={{ __html: highlight(packet.data.join(" "), languages.js) }}></span>]);
+                    logsRef.current.push(<span dangerouslySetInnerHTML={{ __html: highlight(packet.data.join(" "), languages.js) }}></span>);
+                    // setLogs([...logs, ]);
                     break;
                 case "clear_logs":
-                    setLogs([]);
+                    logsRef.current = [];
                     break;
                 default:
                     console.log("unknown type", type);
             }
+            setLogs(logsRef.current);
         });
         return () => {
             runner.off(id);
         };
-    }, [logs]);
+    }, []);
     return <div className="codeBlock">
         <div className="container">
             <div className="code-wrapper">

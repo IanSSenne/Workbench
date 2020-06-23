@@ -1,5 +1,6 @@
 //  new SandboxWorker();
 import { transform as Babeltransform } from "@babel/standalone";
+let libraries = [];
 // importScripts("https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js");
 export function transform(code) {
     try {
@@ -28,7 +29,9 @@ export function transform(code) {
                                         return `"${specifier.imported.name}"`
                                     })}])`)());
                                 } else {
-                                    path.replaceWith(babel.template("throw new Error('unsupported import');")());
+                                    path.replaceWith(babel.template(`const [${path.node.specifiers.map(specifier => specifier.local.name)}] = sandbox.lib("${path.node.source.value}",[${path.node.specifiers.map(specifier => {
+                                        return `"${specifier.imported.name}"`
+                                    })}])`)());
                                 }
                             }
                         }
@@ -38,11 +41,14 @@ export function transform(code) {
         });
         return { code: babel_code.code, errors: [] };
     } catch (e) {
-        console.error(e);
         return { code: "//" + e.message, errors: ["Compiler error: " + e.message] }
     }
 }
 
 onmessage = ({ data }) => {
-    postMessage({ code: transform(data.code), id: data.id });
+    if (data.libraries) {
+        libraries = data.libraries;
+    } else {
+        postMessage({ code: transform(data.code), id: data.id });
+    }
 }

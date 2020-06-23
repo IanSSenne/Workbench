@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Loading from './Loading';
 
+import loaderHelper from "../helpers/loaderHelper";
 // import "../css/index.css";
 const MonacoEditor = dynamic(() => import("react-monaco-editor"), { ssr: false, loading: Loading });
 
 export const Code = (props) => {
-
+    loaderHelper.load("code");
     const [postBody, setPostBody] = useState(props.value);
     const isInitialRender = useRef(true);
     useEffect(() => {
