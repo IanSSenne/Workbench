@@ -1,0 +1,68 @@
+.login{
+    .logout{
+       width: 38px;
+       margin-left: 14px;
+       background: transparent;
+       font-size: 22px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+    }
+    .formModalContainer{
+        width: 100%;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0,0,0, .5);
+        z-index: 50;
+        display: flex;
+    .formModal{
+        margin: auto;
+        width: 100%;
+        max-width: 500px;
+        height: 500px;
+        background: #1e1e29;
+        display: flex;
+        position: relative;
+        > svg {
+          position: absolute;
+          right: 15px;
+          top: 15px;
+          color: #fff;
+          cursor: pointer;
+        }
+        form{
+        margin: auto;
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        label{
+            color: #fff;
+            margin-bottom: 10px;
+         }
+         input, button{
+             border: none;
+             outline: none;
+             padding: 12px;
+             margin-bottom: 14px;
+             width: 100%;
+         }
+         .btnContainer{
+             padding: 40px 0 0 0;
+             input, button{
+               height: 52px;
+               cursor: pointer;
+               background: #09b55d;
+               color: #fff;
+               font-size: 20px;
+               line-height: 1;
+               letter-spacing: 1px;
+             }
+         }
+      }
+    }
+}
+
+}

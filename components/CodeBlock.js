@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { highlight, languages } from 'prismjs/components/prism-core';
 import { FcNext } from "react-icons/fc";
+import '../scss/codeBlock.scss';
 
 import { FcPrevious } from "react-icons/fc";
 import { runner, $TranspileWorker } from "../helpers/sandbox/runner";
@@ -13,7 +14,9 @@ import 'prismjs/themes/prism.css'
 
 import 'prismjs/themes/prism-dark.css'
 import { SheetContext } from "../helpers/SheetContext";
-import { useFirebase } from "react-redux-firebase";
+import { useFirebase, isEmpty, isLoaded } from "react-redux-firebase";
+import { auth } from "firebase";
+import { useSelector } from "react-redux";
 
 export const CodeBlock = ({ id, code: initialCode }) => {
     const [code, setCode] = useState(initialCode);
@@ -21,19 +24,19 @@ export const CodeBlock = ({ id, code: initialCode }) => {
     const [results, setResults] = useState([]);
     const firebase = useFirebase();
     const page = useContext(SheetContext);
-
+    const auth = useSelector(state => state.firebase.auth);
     useEffect(() => {
         const timeout = setTimeout(() => {
             setLogs([]);
             $TranspileWorker.postMessage({ code, id });
-            // firebase.ref("/aaaa/").set(1234)
-            firebase.ref(`/${page}/workbook/${id}`).set({ type: "code", code }, (error) => console.log(error));
+            if (isLoaded(auth) && !isEmpty(auth)) {
+                firebase.ref(`/${page}/workbook/${id}`).set({ type: "code", code }, (error) => console.log(error));
+            }
         }, 500);
         return () => clearTimeout(timeout);
     }, [code]);
     useEffect(() => {
         runner.on(id, (packet) => {
-            console.log(packet);
             const { type } = packet;
             switch (type) {
                 case "return_values":
@@ -47,21 +50,35 @@ export const CodeBlock = ({ id, code: initialCode }) => {
                 case "clear_logs":
                     setLogs([]);
                     break;
+                default:
+                    console.log("unknown type", type);
             }
         });
         return () => {
             runner.off(id);
         };
     }, [logs]);
-    return <div style={{ marginTop: "2em" }}>
-        <FcNext></FcNext>
-        <Code value={code} onValueChange={code => {
-            setCode(code);
-        }}></Code>
-        <div>
-            <FcPrevious></FcPrevious>
-            <ul>{logs.map((_, i) => <li key={i}>{_}</li>)}</ul>
-            <p>{results}</p>
+    return <div className="codeBlock">
+        <div className="container">
+            <div className="code-wrapper">
+                <Code value={code} onValueChange={code => {
+                    setCode(code);
+                }}></Code>
+            </div>
+            <div className="logs">
+                <div className="title"><h2>Logs</h2></div>
+                <div className="allLogs">
+                    <ul>{logs.map((_, i) => <li key={i}>{_}</li>)}</ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div className="result">
+            <div className="title"><h2>{["No Exports", "Exports"][+Boolean(results.length)]}</h2></div>
+            {Boolean(results.length) && <div className="allResults">
+                <p>{results}</p>
+            </div>}
         </div>
     </div>;
 };

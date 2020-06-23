@@ -1,3 +1,9 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 .ql-editor {
   overflow-y: inherit !important;
 }
@@ -5,4 +11,36 @@
 @font-face {
   font-family: "codicon";
   src: url(/codicon.ttf) format("truetype");
+}
+
+// Worksheet page
+.worksheet{
+  min-height: 100vh;
+  padding: 90px 50px 30px 50px;
+  width: 100%;
+  background: #54558a;
+  position: relative;
+}
+
+// Add page
+.addPage{
+  .addCodeBtn{
+    border: none;
+    outline: none;
+    height: 44px;
+    width: 140px;
+    box-shadow: 0px 10px 14px -7px #3e7327;
+    background: #77b55a;
+    font-size: 13px;
+    color: #fff;
+    font-weight: bold;
+    transition: background 500ms ease-in-out;
+    cursor: pointer;
+    &:hover{
+       background: darken(#77b55a, 10%);
+    }
+    &:last-of-type{
+     margin-left: 14px;
+    }
+  }
 }

@@ -1,0 +1,52 @@
+$btn: #77b55a;
+
+nav {
+  background-color: #222222;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 51;
+  box-shadow: 0 10px 18px -5px black;
+  padding: 12px 0;
+  .container{
+    width: 100%;
+    max-width: 94%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .logo{
+      color: #fff;
+      font-size: 26px;
+      font-weight: 600;
+      span{
+        color: #b9ff98;
+      }
+    }
+    .btnContainer{
+      display: flex;
+      align-items: center;
+        button{
+      font-family: Arial;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      height: 36px;
+      color: #fff;
+      &.fork-button {
+       width: 100px;
+       box-shadow: 0px 10px 14px -7px #3e7327;
+       background: $btn;
+       font-size: 13px;
+       font-weight: bold;
+       text-shadow: 0px 1px 0px #5b8a3c;
+       transition: background 500ms ease-in-out;
+       &:hover {
+       background: darken($btn, 10%);
+       }
+     }
+   }
+  }
+ }
+}

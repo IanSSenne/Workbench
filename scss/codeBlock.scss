@@ -1,0 +1,64 @@
+.codeBlock {
+  width: 100%;
+  margin: 20px 0;
+  .result {
+    background: #1e1e1e;
+    width: 100%;
+    .title {
+      width: 100%;
+      padding: 16px;
+      background: #77b55a;
+      h2 {
+        color: #fff;
+        font-size: 25px;
+      }
+    }
+    .allResults {
+      min-height: 100px;
+      max-height: 100px;
+      overflow-y: auto;
+      padding: 16px 12px;
+      p {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        span {
+          padding: 0 4px;
+          &:not(:last-of-type) {
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+  }
+  .container {
+    .code-wrapper {
+      width: 1000px;
+      min-width: 1000px;
+    }
+    display: flex;
+    width: 100%;
+  }
+  .logs {
+    height: 600px;
+    max-height: 600px;
+    width: 100%;
+    overflow-y: auto;
+    background: #1e1e1e;
+    .title {
+      width: 100%;
+      padding: 16px;
+      background: #77b55a;
+      h2 {
+        color: #fff;
+        font-size: 25px;
+      }
+    }
+    .allLogs {
+      padding: 16px;
+      ul {
+        list-style-type: none;
+      }
+    }
+  }
+}
